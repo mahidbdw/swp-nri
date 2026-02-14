@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Tax & SWP Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input[type="range"] { accent-color: #6366f1; }
+        .stat-card { background: rgba(255, 255, 255, 0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .glass { background: #0f172a; border-left: 1px solid rgba(255,255,255,0.1); }
+        .highlight-box { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen py-10 px-4 font-sans text-slate-900">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden grid lg:grid-cols-12 border border-slate-200">
+            
+            <div class="lg:col-span-4 p-10 bg-white">
+                <h2 class="text-3xl font-black text-slate-800 mb-2">Tax Saving Strategy Calculator</h2>
+                <p class="text-slate-500 mb-10 text-sm">Configure your corpus and withdrawal needs.</p>
+                
+                <div class="space-y-10">
+                    <div>
+                        <div class="flex justify-between mb-3">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Investment</label>
+                            <span class="text-xl font-black text-indigo-600" id="dispInvestment">₹0</span>
+                        </div>
+                        <input type="range" id="investment" min="1000000" max="100000000" step="1000000" value="50000000" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mb-3">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Monthly Withdrawal</label>
+                            <span class="text-xl font-black text-indigo-600" id="dispMonthlyWithdrawal">₹0</span>
+                        </div>
+                        <input type="range" id="withdrawal" min="10000" max="1000000" step="5000" value="150000" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase mb-3 block">Returns (%)</label>
+                            <input type="number" id="returns" value="8" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase mb-3 block">Tax Slab (%)</label>
+                            <input type="number" id="taxSlab" value="30" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase mb-3 block">Time Horizon</label>
+                        <select id="years" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                            <option value="1" selected>1 Year</option>
+                            <option value="3">3 Years</option>
+                            <option value="5">5 Years</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 p-10 glass text-white">
+                <header class="flex justify-between items-center mb-10">
+                    <h2 class="text-3xl font-black italic">Tax Liability Breakdown (FD vs SWP) </h2>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Annual Fund Growth</p>
+                        <p class="text-4xl font-black text-indigo-400" id="resAnnualProfit">₹0</p>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="stat-card border-amber-500/20 bg-amber-500/5">
+                        <p class="text-amber-400 text-[10px] font-bold uppercase mb-3">Total Annual Tax Liability (FD/Pension)</p>
+                        <p class="text-2xl font-black text-white" id="resFullGrowthTax">₹0</p>
+                        <p class="text-[13px] text-slate-500 mt-2 italic">Tax on 100% of profit (Standard FD/Pension Logic)</p>
+                    </div>
+
+                    <div class="stat-card border-emerald-500/20 bg-emerald-500/5">
+                        <p class="text-emerald-400 text-[10px] font-bold uppercase mb-3">Tax on Withdrawal (SWP)</p>
+                        <p class="text-2xl font-black text-white" id="resSwpTax">₹0</p>
+                        <p class="text-[13px] text-slate-500 mt-2 italic">Tax only on the profit portion of your cash flow.</p>
+                    </div>
+
+                    <div class="stat-card border-indigo-500/20 bg-indigo-500/10">
+                        <p class="text-indigo-400 text-[10px] font-bold uppercase mb-3">Immediate Tax Savings</p>
+                        <p class="text-2xl font-black text-indigo-200" id="resAnnualSaving">₹0</p>
+                        <p class="text-[13px] text-slate-500 mt-2 italic">Liquidity gained vs. traditional fixed income.</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box rounded-2xl p-6 mb-8">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Post-Tax Projection</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Total Amount Withdrawn (Annual):</span>
+                            <span class="font-bold text-white" id="resTotalWithdrawn">₹0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Actual Tax Paid (Via SWP):</span>
+                            <span class="font-bold text-red-400" id="resActualTaxPaid">₹0</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-4 border-t border-slate-700">
+                            <span class="text-slate-200 font-bold italic">Net Portfolio Value After Year 1:</span>
+                            <span class="text-xl font-black text-emerald-400" id="resNetValue">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-600 rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl">
+                    <div class="relative z-10">
+                        <p class="text-indigo-200 text-xs font-bold uppercase mb-1">Cumulative Tax Benefit (Total Period)</p>
+                        <p class="text-5xl font-black text-white tracking-tighter" id="resTotalBenefit">₹0</p>
+                        <p class="text-indigo-100/60 text-[10px] mt-4 font-bold tracking-widest uppercase">Wealth retained by optimizing for withdrawal-based tax</p>
+                    </div>
+                    <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-indigo-500 rounded-full opacity-20"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const formatter = new Intl.NumberFormat('en-IN', {
+            style: 'currency', currency: 'INR', maximumFractionDigits: 0
+        });
+
+        function calculate() {
+            const P = parseFloat(document.getElementById('investment').value);
+            const r = parseFloat(document.getElementById('returns').value) / 100;
+            const wMonthly = parseFloat(document.getElementById('withdrawal').value);
+            const slab = parseFloat(document.getElementById('taxSlab').value) / 100;
+            const years = parseInt(document.getElementById('years').value);
+
+            const annualWithdrawal = wMonthly * 12;
+            const annualGrowth = P * r;
+
+            // 1. Full Annual Tax Liability (Standard Approach)
+            // Even if you take nothing out, this represents the taxable profit generated.
+            const fullGrowthTax = annualGrowth * slab;
+
+            // 2. SWP Withdrawal Tax (Optimized Approach)
+            // We find the 'gain ratio' within the withdrawal amount.
+            const gainRatio = annualGrowth / (P + annualGrowth);
+            const taxableGainInWithdrawal = annualWithdrawal * gainRatio;
+            const swpTax = taxableGainInWithdrawal * slab;
+
+            // 3. Final Portfolio Calculation
+            // Corpus = (Initial + Growth) - Withdrawal - Tax (on withdrawal)
+            const finalValue = (P + annualGrowth) - annualWithdrawal - swpTax;
+
+            // UI Updates
+            document.getElementById('dispInvestment').innerText = formatter.format(P);
+            document.getElementById('dispMonthlyWithdrawal').innerText = formatter.format(wMonthly);
+            
+            document.getElementById('resAnnualProfit').innerText = formatter.format(annualGrowth);
+            document.getElementById('resFullGrowthTax').innerText = formatter.format(fullGrowthTax);
+            document.getElementById('resSwpTax').innerText = formatter.format(swpTax);
+            document.getElementById('resAnnualSaving').innerText = formatter.format(fullGrowthTax - swpTax);
+            
+            document.getElementById('resTotalWithdrawn').innerText = formatter.format(annualWithdrawal);
+            document.getElementById('resActualTaxPaid').innerText = formatter.format(swpTax);
+            document.getElementById('resNetValue').innerText = formatter.format(finalValue);
+            document.getElementById('resTotalBenefit').innerText = formatter.format((fullGrowthTax - swpTax) * years);
+        }
+
+        ['investment', 'withdrawal', 'returns', 'taxSlab', 'years'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculate);
+        });
+
+        calculate();
+    </script>
+</body>
+</html>

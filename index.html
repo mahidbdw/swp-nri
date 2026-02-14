@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWP Master Strategy Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link.active { background: #6366f1; color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+        .frame-container { height: calc(100vh - 180px); min-height: 600px; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 24px; }
+        .glass-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 font-sans overflow-x-hidden">
+
+    <nav class="glass-nav sticky top-0 z-50 border-b border-slate-800 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center font-black text-white italic">S</div>
+                <h1 class="text-xl font-black tracking-tighter uppercase italic text-white">SWP Master Suite</h1>
+            </div>
+            
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                <button onclick="loadPage('swp-tax-v5.html', this)" class="nav-link active px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
+                    Tax Saving Strategy
+                </button>
+                <button onclick="loadPage('swp-3buckets-v4.html', this)" class="nav-link px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
+                    Financial Freedom
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6">
+        <div id="welcome-view" class="grid md:grid-cols-2 gap-8 py-10">
+            <div class="group cursor-pointer bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-indigo-500/50 transition-all" onclick="loadPage('swp-tax-v5.html', null)">
+                <div class="text-indigo-500 mb-4 text-4xl">🛡️</div>
+                <h2 class="text-2xl font-black text-white mb-2">Tax Saving Strategy</h2>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">Stop losing 30% of your gains to traditional tax slabs. Learn how the SWP mechanism treats your withdrawals to keep more wealth in your portfolio.</p>
+                <span class="text-indigo-400 font-bold text-xs uppercase tracking-widest">Launch Calculator →</span>
+            </div>
+
+            <div class="group cursor-pointer bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-emerald-500/50 transition-all" onclick="loadPage('swp-3buckets-v4.html', null)">
+                <div class="text-emerald-500 mb-4 text-4xl">📈</div>
+                <h2 class="text-2xl font-black text-white mb-2">Financial Freedom</h2>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">Utilize the 3-Bucket "Squirreling" method. Balance stability, income, and growth to ensure your retirement corpus never runs out of fuel.</p>
+                <span class="text-emerald-400 font-bold text-xs uppercase tracking-widest">Explore Buckets →</span>
+            </div>
+        </div>
+
+        <div id="app-view" class="frame-container hidden shadow-2xl">
+            <iframe id="strategy-frame" src=""></iframe>
+        </div>
+    </main>
+
+    <script>
+        function loadPage(url, btn) {
+            // Toggle Views
+            document.getElementById('welcome-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+
+            // Update Iframe
+            document.getElementById('strategy-frame').src = url;
+
+            // Update Nav Styling
+            if (btn) {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                btn.classList.add('active');
+            } else {
+                // Handle card clicks - sync nav
+                const buttons = document.querySelectorAll('.nav-link');
+                buttons.forEach(b => b.classList.remove('active'));
+                if (url.includes('tax')) buttons[0].classList.add('active');
+                else buttons[1].classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
