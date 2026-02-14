@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Bucket ISR Strategy Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bucket-card { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); z-index: 10; position: relative; }
+        .bucket-card:hover { transform: translateY(-5px); border-color: rgba(99, 102, 241, 0.4); }
+        input[type="range"] { accent-color: #6366f1; }
+        
+        .flow-line {
+            position: absolute; height: 4px; z-index: 1; display: none;
+            background: linear-gradient(90deg, transparent, #6366f1, transparent);
+            background-size: 200% 100%;
+        }
+        .active-flow { display: block; animation: flowMove 1.5s linear infinite; }
+        @keyframes flowMove { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .isr-btn { transition: all 0.2s; cursor: pointer; }
+        .isr-btn:active { transform: scale(0.9); }
+        .pulse-glow { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen p-4 md:p-10 font-sans">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-black tracking-tight text-white mb-2 italic uppercase">ISR & Squirreling Dashboard</h1>
+            <p class="text-slate-400">Manage your Income Stability Ratio to secure your financial freedom</p>
+        </header>
+
+        <div class="bg-slate-900/50 p-8 rounded-3xl mb-12 border border-slate-800">
+            <div class="grid lg:grid-cols-3 gap-8 items-center">
+                
+                <div class="lg:col-span-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-4">Total Retirement Corpus</label>
+                    <input type="range" id="totalCorpus" min="10000000" max="100000000" step="1000000" value="21000000" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer mb-2">
+                    <p class="text-3xl font-black text-indigo-400" id="dispCorpus">₹2.1 Cr</p>
+                </div>
+
+                <div class="lg:col-span-1 flex flex-col items-center justify-center bg-slate-800/40 p-5 rounded-2xl border border-white/5">
+                    <label class="text-[10px] font-bold uppercase text-slate-500 mb-3 tracking-widest">Income Stability Ratio (ISR)</label>
+                    <div class="flex items-center gap-8">
+                        <button onclick="adjustISR(-0.5)" class="isr-btn p-3 bg-slate-700 hover:bg-red-500/20 rounded-full border border-white/10 text-xl text-white">▼</button>
+                        <span class="text-5xl font-black text-white" id="dispISR">17.5</span>
+                        <button onclick="adjustISR(0.5)" class="isr-btn p-3 bg-slate-700 hover:bg-emerald-500/20 rounded-full border border-white/10 text-xl text-white">▲</button>
+                    </div>
+                    <p class="text-[10px] mt-4 font-black uppercase tracking-widest" id="isrStatus">Acceptable</p>
+                </div>
+
+                <div class="lg:col-span-1 bg-indigo-500/10 p-6 rounded-2xl border border-indigo-500/20 text-center">
+                    <p class="text-xs font-bold text-indigo-300 uppercase mb-1">Sustainable Monthly SWP</p>
+                    <p class="text-4xl font-black text-white mb-2" id="dispMonthly">₹1,00,000</p>
+                    <button onclick="triggerFlow('withdrawal')" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[9px] font-black uppercase rounded-full transition-all pulse-glow">
+                        Simulate Withdrawal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-10 relative">
+            <div id="flow3to2" class="flow-line top-1/2 left-[28%] w-[12%] hidden lg:block"></div>
+            <div id="flow2to1" class="flow-line top-1/2 left-[61%] w-[12%] hidden lg:block"></div>
+
+            <div class="bucket-card bg-slate-900 p-8 rounded-3xl" id="cardB3">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="bg-indigo-600 text-[9px] font-black px-3 py-1 rounded-full uppercase">Bucket 3</div>
+                    <span class="text-indigo-400 font-black text-xs">Growth</span>
+                </div>
+                <div class="text-3xl font-black text-white mb-2" id="valB3">₹0</div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold mb-6 italic">10+ Years Horizon</p>
+                <button onclick="triggerFlow('squirrel')" class="w-full py-2 border border-indigo-500/50 rounded-xl text-[9px] font-black uppercase hover:bg-indigo-500/10 transition-colors">
+                    Squirrel Gains
+                </button>
+            </div>
+
+            <div class="bucket-card bg-slate-900 p-8 rounded-3xl" id="cardB2">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="bg-emerald-600 text-[9px] font-black px-3 py-1 rounded-full uppercase">Bucket 2</div>
+                    <span class="text-emerald-400 font-black text-xs">Stabilizer</span>
+                </div>
+                <div class="text-3xl font-black text-white mb-2" id="valB2">₹0</div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold mb-6 italic">3–7 Years Horizon</p>
+                <button onclick="triggerFlow('refill')" class="w-full py-2 border border-emerald-500/50 rounded-xl text-[9px] font-black uppercase hover:bg-emerald-500/10 transition-colors">
+                    Refill Bucket 1
+                </button>
+            </div>
+
+            <div class="bucket-card bg-slate-900 p-8 rounded-3xl" id="cardB1">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="bg-amber-600 text-[9px] font-black px-3 py-1 rounded-full uppercase">Bucket 1</div>
+                    <span class="text-amber-400 font-black text-xs">Safety</span>
+                </div>
+                <div class="text-3xl font-black text-white mb-2" id="valB1">₹0</div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold mb-6 italic">0–3 Years Cash Flow</p>
+                <div class="text-center p-2 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                    <span class="text-[9px] text-amber-400 font-black uppercase">Active SWP Source</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isr = 17.5; // Default acceptable ratio
+        const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+
+        function adjustISR(amt) {
+            isr = Math.min(Math.max(isr + amt, 10), 30);
+            update();
+        }
+
+        function triggerFlow(type) {
+            const f32 = document.getElementById('flow3to2');
+            const f21 = document.getElementById('flow2to1');
+            if (type === 'squirrel') { f32.classList.add('active-flow'); setTimeout(() => f32.classList.remove('active-flow'), 2000); }
+            else if (type === 'refill') { f21.classList.add('active-flow'); setTimeout(() => f21.classList.remove('active-flow'), 2000); }
+            else if (type === 'withdrawal') {
+                const b1 = document.getElementById('cardB1');
+                b1.classList.add('pulse-glow');
+                setTimeout(() => b1.classList.remove('pulse-glow'), 2000);
+            }
+        }
+
+        function update() {
+            const corpus = parseFloat(document.getElementById('totalCorpus').value);
+            const annualWithdrawal = corpus / isr; // Ratio determines sustainable withdrawal
+            const monthlyIncome = annualWithdrawal / 12;
+            
+            // Allocation logic: B1 & B2 provide stability. B3 is remainder growth
+            // We'll follow the video rule: B1 (3 yrs of income), B2 (rest of ISR bucket), B3 (growth)
+            const b1Val = monthlyIncome * 36; // 3 years safety
+            const b2Val = (annualWithdrawal * isr * 0.4); // Stabilizer ratio
+            const b3Val = Math.max(0, corpus - b1Val - b2Val);
+
+            document.getElementById('dispISR').innerText = isr.toFixed(1);
+            document.getElementById('dispCorpus').innerText = (corpus/10000000).toFixed(2) + ' Cr';
+            document.getElementById('dispMonthly').innerText = formatter.format(monthlyIncome);
+            
+            const status = document.getElementById('isrStatus');
+            if(isr < 17.5) { status.innerText = "High Risk"; status.className = "text-[10px] mt-4 font-black uppercase text-red-400"; }
+            else if(isr >= 24) { status.innerText = "Comfortable"; status.className = "text-[10px] mt-4 font-black uppercase text-emerald-400"; }
+            else { status.innerText = "Acceptable"; status.className = "text-[10px] mt-4 font-black uppercase text-amber-400"; }
+
+            document.getElementById('valB1').innerText = formatter.format(b1Val);
+            document.getElementById('valB2').innerText = formatter.format(b2Val);
+            document.getElementById('valB3').innerText = formatter.format(b3Val);
+        }
+
+        document.getElementById('totalCorpus').addEventListener('input', update);
+        update();
+    </script>
+</body>
+</html>
